@@ -1,4 +1,4 @@
-package pool;
+package model;
 
 import org.postgresql.ds.PGSimpleDataSource;
 
@@ -12,7 +12,7 @@ import java.util.LinkedList;
 public class JdbcConnectionPool {
     private static JdbcConnectionPool instance = null;
 
-    private static final String CONNECTION_URL = "jdbc:postgresql://localhost:5432/test_jdbc";
+    private static final String CONNECTION_URL = "jdbc:postgresql://localhost:5432/payment_system";
     private static final String USER = "postgres";
     private static final String PASSWORD = "postgres";
 
@@ -80,7 +80,7 @@ public class JdbcConnectionPool {
         return this.freeConnections.isEmpty() ? this.createConnection() : this.freeConnections.pop();
     }
 
-    public int getSize() {
+    private int getSize() {
         return this.size;
     }
 }
