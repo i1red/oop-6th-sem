@@ -1,5 +1,8 @@
 package model.table;
 
+import java.util.Arrays;
+import java.util.List;
+
 public class PaymentTable {
     public static final String NAME = "payment";
 
@@ -9,4 +12,7 @@ public class PaymentTable {
         public static final String TO_CARD_ID = "to_card_id";
         public static final String SUM = "sum";
     }
+
+    public static final List<String> COLUMNS = Arrays.asList(Column.ID, Column.FROM_CARD_ID, Column.TO_CARD_ID, Column.SUM);
+
 }
