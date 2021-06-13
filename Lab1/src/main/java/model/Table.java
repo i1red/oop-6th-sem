@@ -50,11 +50,11 @@ public class Table {
         public static class Column {
             public static final String ID = "id";
             public static final String NUMBER = "number";
-            public static final String CUSTOMER_ID = "customer_id";
+            public static final String USER_ID = "user_id";
             public static final String IS_BLOCKED = "is_blocked";
         }
 
-        public static final List<String> COLUMNS = Arrays.asList(Column.ID, Column.NUMBER, Column.CUSTOMER_ID, Column.IS_BLOCKED);
+        public static final List<String> COLUMNS = Arrays.asList(Column.ID, Column.NUMBER, Column.USER_ID, Column.IS_BLOCKED);
     }
 
     public static class RefreshToken {

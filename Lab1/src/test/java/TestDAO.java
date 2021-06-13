@@ -68,9 +68,9 @@ public class TestDAO {
         BankAccount firstBankAccount = bankAccountDAO.insert(new BankAccount().setCustomerId(firstUser.getId()).setNumber("number1"));
         BankAccount secondBankAccount = bankAccountDAO.insert(new BankAccount().setCustomerId(secondUser.getId()).setNumber("number2"));
 
-        List<BankAccount> firstUserAccounts = bankAccountDAO.filter(Table.BankAccount.Column.CUSTOMER_ID, firstUser.getId());
+        List<BankAccount> firstUserAccounts = bankAccountDAO.filter(Table.BankAccount.Column.USER_ID, firstUser.getId());
         List<BankAccount> secondUserAccounts = bankAccountDAO.filter(
-                Arrays.asList(Table.BankAccount.Column.CUSTOMER_ID, Table.BankAccount.Column.IS_BLOCKED),
+                Arrays.asList(Table.BankAccount.Column.USER_ID, Table.BankAccount.Column.IS_BLOCKED),
                 secondBankAccount
         );
 

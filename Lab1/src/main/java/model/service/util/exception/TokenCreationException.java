@@ -1,4 +1,4 @@
-package model.service.sign;
+package model.service.util.exception;
 
 public class TokenCreationException extends Exception {
     public TokenCreationException(String errorMessage) {

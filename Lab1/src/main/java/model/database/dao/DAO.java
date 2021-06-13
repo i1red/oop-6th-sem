@@ -1,6 +1,8 @@
 package model.database.dao;
 
+import lombok.SneakyThrows;
 import model.JdbcConnectionPool;
+import model.Table;
 import model.mapper.Mapper;
 
 import java.sql.*;
@@ -8,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class DAO<T> {
     protected final Mapper<T> mapper;
@@ -68,6 +71,35 @@ public class DAO<T> {
         ){
             this.mapper.fillPreparedStatement(entity, preparedStatement, this.insertColumns);
             preparedStatement.executeUpdate();
+
+            try (ResultSet resultSet = preparedStatement.getGeneratedKeys()){
+                resultSet.next();
+                return mapper.fromResultSet(resultSet);
+            }
+        }
+    }
+
+    public T update(String column, T entityUpdated) throws SQLException {
+        return this.update(Collections.singletonList(column), entityUpdated);
+    }
+
+    public T update(List<String> columns, T entityUpdated) throws SQLException {
+        String sql = String.format(
+                "UPDATE %s SET %s WHERE %s",
+                this.tableName,
+                columns.stream().map(column -> String.format("%s=?", column)).collect(Collectors.joining(", ")),
+                String.join(" AND ", this.primaryKeyColumns.stream().map(column -> String.format("%s=?", column)).toArray(String[]::new))
+        );
+
+        try (
+                Connection connection = JdbcConnectionPool.getInstance().getConnection();
+                PreparedStatement preparedStatement = connection.prepareStatement(sql, this.columns.toArray(String[]::new))
+        ){
+            this.mapper.fillPreparedStatement(entityUpdated, preparedStatement,
+                    Stream.concat(columns.stream(), this.primaryKeyColumns.stream()).collect(Collectors.toList()));
+            preparedStatement.executeUpdate();
+
+            System.out.println(preparedStatement);
 
             try (ResultSet resultSet = preparedStatement.getGeneratedKeys()){
                 resultSet.next();

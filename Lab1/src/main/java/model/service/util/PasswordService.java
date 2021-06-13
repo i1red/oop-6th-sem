@@ -1,4 +1,6 @@
-package model.service.sign;
+package model.service.util;
+
+import model.service.util.exception.PasswordTransformException;
 
 import javax.crypto.*;
 import javax.crypto.spec.IvParameterSpec;

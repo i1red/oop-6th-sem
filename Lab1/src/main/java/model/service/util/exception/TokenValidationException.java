@@ -1,4 +1,4 @@
-package model.service.sign;
+package model.service.util.exception;
 
 public class TokenValidationException extends Exception{
     public TokenValidationException(String errorMessage) {

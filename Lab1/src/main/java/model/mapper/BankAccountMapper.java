@@ -15,7 +15,7 @@ public class BankAccountMapper implements Mapper<BankAccount> {
         return new BankAccount()
                 .setId(resultSet.getInt(Table.BankAccount.Column.ID))
                 .setNumber(resultSet.getString(Table.BankAccount.Column.NUMBER))
-                .setCustomerId(resultSet.getInt(Table.BankAccount.Column.CUSTOMER_ID))
+                .setCustomerId(resultSet.getInt(Table.BankAccount.Column.USER_ID))
                 .setBlocked(resultSet.getBoolean(Table.BankAccount.Column.IS_BLOCKED));
     }
 
@@ -25,7 +25,7 @@ public class BankAccountMapper implements Mapper<BankAccount> {
             switch (columnNames.get(columnIndex)) {
                 case Table.BankAccount.Column.ID -> preparedStatement.setInt(columnIndex + 1, bankAccount.getId());
                 case Table.BankAccount.Column.NUMBER -> preparedStatement.setString(columnIndex + 1, bankAccount.getNumber());
-                case Table.BankAccount.Column.CUSTOMER_ID -> preparedStatement.setInt(columnIndex + 1, bankAccount.getCustomerId());
+                case Table.BankAccount.Column.USER_ID -> preparedStatement.setInt(columnIndex + 1, bankAccount.getCustomerId());
                 case Table.BankAccount.Column.IS_BLOCKED -> preparedStatement.setBoolean(columnIndex + 1, bankAccount.isBlocked());
                 default -> throw new IllegalArgumentException(String.format("Column %s does not exist", columnNames.get(columnIndex)));
             }
