@@ -76,6 +76,29 @@ public class DAO<T> {
         }
     }
 
+    public List<T> filter(String column, Object value) throws SQLException {
+        List<T> entities = new ArrayList<>();
+        String sql = String.format(
+                "SELECT * FROM %s WHERE %s=?",
+                this.tableName, column
+        );
+
+        try (
+                Connection connection = JdbcConnectionPool.getInstance().getConnection();
+                PreparedStatement preparedStatement = connection.prepareStatement(sql)
+        ){
+            preparedStatement.setObject(1, value);
+
+            try (ResultSet resultSet = preparedStatement.executeQuery()){
+                while (resultSet.next()) {
+                    entities.add(mapper.fromResultSet(resultSet));
+                }
+            }
+        }
+
+        return entities;
+    }
+
     public List<T> filter(List<String> columns, T entityFilter) throws SQLException {
         List<T> entities = new ArrayList<>();
         String sql = String.format(
