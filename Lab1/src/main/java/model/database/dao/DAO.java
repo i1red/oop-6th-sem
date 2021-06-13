@@ -1,4 +1,4 @@
-package model.dao;
+package model.database.dao;
 
 import model.JdbcConnectionPool;
 import model.mapper.Mapper;

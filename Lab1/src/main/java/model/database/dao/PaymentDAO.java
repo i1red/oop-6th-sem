@@ -1,4 +1,4 @@
-package model.dao;
+package model.database.dao;
 
 import model.entity.Payment;
 import model.mapper.PaymentMapper;

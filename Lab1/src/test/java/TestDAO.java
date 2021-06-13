@@ -1,7 +1,7 @@
 import model.JdbcConnectionPool;
 import model.Table;
-import model.dao.BankAccountDAO;
-import model.dao.UserDAO;
+import model.database.dao.BankAccountDAO;
+import model.database.dao.UserDAO;
 import model.entity.BankAccount;
 import model.entity.User;
 

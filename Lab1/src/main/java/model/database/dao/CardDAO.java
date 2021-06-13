@@ -1,4 +1,4 @@
-package model.dao;
+package model.database.dao;
 
 import model.entity.Card;
 import model.mapper.CardMapper;

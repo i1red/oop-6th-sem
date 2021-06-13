@@ -1,4 +1,4 @@
-package model.service;
+package model.service.sign;
 
 public class PasswordTransformException extends Exception {
     public PasswordTransformException(String errorMessage) {

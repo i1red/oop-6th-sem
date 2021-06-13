@@ -1,6 +1,7 @@
 package model;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 public class Table {
@@ -54,5 +55,15 @@ public class Table {
         }
 
         public static final List<String> COLUMNS = Arrays.asList(Column.ID, Column.NUMBER, Column.CUSTOMER_ID, Column.IS_BLOCKED);
+    }
+
+    public static class RefreshToken {
+        public static final String NAME = "refresh_token";
+
+        public static class Column {
+            public static final String VALUE = "value";
+        }
+
+        public static final List<String> COLUMNS = Collections.singletonList(Column.VALUE);
     }
 }

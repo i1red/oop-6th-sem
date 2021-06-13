@@ -1,5 +1,5 @@
-import model.service.PasswordService;
-import model.service.PasswordTransformException;
+import model.service.sign.PasswordService;
+import model.service.sign.PasswordTransformException;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
