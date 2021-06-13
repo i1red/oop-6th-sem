@@ -1,4 +1,4 @@
-package pool;
+package model;
 
 import org.postgresql.ds.PGSimpleDataSource;
 
@@ -12,17 +12,13 @@ import java.util.LinkedList;
 public class JdbcConnectionPool {
     private static JdbcConnectionPool instance = null;
 
-    private static final String CONNECTION_URL = "jdbc:postgresql://localhost:5432/test_jdbc";
-    private static final String USER = "postgres";
-    private static final String PASSWORD = "postgres";
-
     private final int size;
     private final DataSource dataSource;
     private final LinkedList<Connection> freeConnections;
 
     public static JdbcConnectionPool getInstance() throws SQLException {
         if (instance == null) {
-            instance = new JdbcConnectionPool(8);
+            instance = new JdbcConnectionPool(Integer.parseInt(System.getenv("CONNECTION_POOL_SIZE")));
         }
 
         return instance;
@@ -42,9 +38,12 @@ public class JdbcConnectionPool {
     private DataSource getDataSource() {
         var pgDataSource = new PGSimpleDataSource();
 
-        pgDataSource.setUrl(CONNECTION_URL);
-        pgDataSource.setUser(USER);
-        pgDataSource.setPassword(PASSWORD);
+        pgDataSource.setUrl(String.format(
+                "jdbc:postgresql://%s/%s",
+                System.getenv("POSTGRES_HOST"), System.getenv("POSTGRES_DATABASE")
+        ));
+        pgDataSource.setUser(System.getenv("POSTGRES_USER"));
+        pgDataSource.setPassword(System.getenv("POSTGRES_PASSWORD"));
 
         return pgDataSource;
     }
@@ -80,7 +79,7 @@ public class JdbcConnectionPool {
         return this.freeConnections.isEmpty() ? this.createConnection() : this.freeConnections.pop();
     }
 
-    public int getSize() {
+    private int getSize() {
         return this.size;
     }
 }
