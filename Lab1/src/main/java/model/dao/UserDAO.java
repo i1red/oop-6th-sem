@@ -2,11 +2,11 @@ package model.dao;
 
 import model.entity.User;
 import model.mapper.UserMapper;
-import model.table.UserTable;
+import model.Table;
 
 
 public class UserDAO extends DAO<User> {
     public UserDAO() {
-        super(new UserMapper(), UserTable.NAME, UserTable.COLUMNS);
+        super(new UserMapper(), Table.User.NAME, Table.User.COLUMNS);
     }
 }

@@ -2,10 +2,10 @@ package model.dao;
 
 import model.entity.BankAccount;
 import model.mapper.BankAccountMapper;
-import model.table.BankAccountTable;
+import model.Table;
 
 public class BankAccountDAO extends DAO<BankAccount>{
     public BankAccountDAO() {
-        super(new BankAccountMapper(), BankAccountTable.NAME, BankAccountTable.COLUMNS);
+        super(new BankAccountMapper(), Table.BankAccount.NAME, Table.BankAccount.COLUMNS);
     }
 }
