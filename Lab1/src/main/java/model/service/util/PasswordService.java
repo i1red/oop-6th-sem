@@ -1,6 +1,6 @@
 package model.service.util;
 
-import model.service.util.exception.PasswordTransformException;
+import model.service.util.exception.PasswordTransformError;
 
 import javax.crypto.*;
 import javax.crypto.spec.IvParameterSpec;
@@ -31,22 +31,22 @@ public class PasswordService {
     private static final String CIPHER = "AES/CBC/PKCS5Padding";
 
 
-    public static String encryptPassword(String password) throws PasswordTransformException {
+    public static String encryptPassword(String password) {
         try {
             Cipher cipher = createCipher(Cipher.ENCRYPT_MODE);
             return Base64.getEncoder()
                     .encodeToString(cipher.doFinal(password.getBytes(StandardCharsets.UTF_8)));
         } catch (Exception e) {
-            throw new PasswordTransformException("Failed to encrypt password", e);
+            throw new PasswordTransformError("Failed to encrypt password", e);
         }
     }
 
-    public static String decryptPassword(String encryptedPassword) throws PasswordTransformException {
+    public static String decryptPassword(String encryptedPassword) {
         try {
             Cipher cipher = createCipher(Cipher.DECRYPT_MODE);
             return new String(cipher.doFinal(Base64.getDecoder().decode(encryptedPassword)));
         } catch (Exception e) {
-            throw new PasswordTransformException("Failed to decrypt password", e);
+            throw new PasswordTransformError("Failed to decrypt password", e);
         }
     }
 

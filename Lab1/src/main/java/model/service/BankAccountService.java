@@ -3,43 +3,35 @@ package model.service;
 import model.Table;
 import model.database.dao.BankAccountDAO;
 import model.database.dao.DAO;
+import model.database.dao.exception.IntegrityConstraintViolation;
 import model.entity.BankAccount;
 
-import java.sql.SQLException;
 import java.util.List;
 
 public class BankAccountService {
     DAO<BankAccount> bankAccountDAO = new BankAccountDAO();
 
-    public BankAccount create(BankAccount bankAccount)  {
+    public BankAccount create(BankAccount bankAccount) throws IllegalArgumentException {
         try {
             return bankAccountDAO.insert(bankAccount);
-        } catch (SQLException e) {
-            return null;
+        } catch (IntegrityConstraintViolation e) {
+            throw new IllegalArgumentException("Failed to create bank account for user", e);
         }
     }
 
     public BankAccount bankAccountSetBlocked(int id, boolean blocked) {
         try {
             return bankAccountDAO.update(Table.BankAccount.Column.IS_BLOCKED, new BankAccount().setId(id).setBlocked(blocked));
-        } catch (SQLException e) {
-            return null;
+        } catch (IntegrityConstraintViolation e) {
+            throw new IllegalArgumentException("Failed to update bank account", e);
         }
     }
 
     public List<BankAccount> listBankAccounts() {
-        try {
-            return bankAccountDAO.list();
-        } catch (SQLException e) {
-            return null;
-        }
+        return bankAccountDAO.list();
     }
 
     public List<BankAccount> listUserBankAccounts(int userId) {
-        try {
-            return bankAccountDAO.filter(Table.BankAccount.Column.USER_ID, userId);
-        } catch (SQLException e) {
-            return null;
-        }
+        return bankAccountDAO.filter(Table.BankAccount.Column.USER_ID, userId);
     }
 }

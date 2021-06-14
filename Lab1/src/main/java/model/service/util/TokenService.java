@@ -5,12 +5,11 @@ import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import model.database.RefreshTokenDBClient;
+import model.database.dao.exception.IntegrityConstraintViolation;
 import model.entity.User;
-import model.service.UserService;
-import model.service.util.exception.TokenCreationException;
+import model.service.util.exception.TokenCreationError;
 import model.service.util.exception.TokenValidationException;
 
-import java.sql.*;
 import java.time.Instant;
 import java.util.Date;
 import java.util.Map;
@@ -34,7 +33,7 @@ public class TokenService {
                 .compact();
     }
 
-    public static String createRefreshToken(User user) throws TokenCreationException {
+    public static String createRefreshToken(User user) {
         String token = Jwts.builder()
                 .setClaims(userToClaimsMap(user))
                 .setExpiration(Date.from(Instant.now().plusSeconds(REFRESH_TOKEN_LIFETIME)))
@@ -44,8 +43,8 @@ public class TokenService {
         try {
             RefreshTokenDBClient.insert(token);
             return token;
-        } catch (SQLException e) {
-            throw new TokenCreationException("Failed to save token", e);
+        } catch (IntegrityConstraintViolation e) {
+            throw new TokenCreationError("Failed to save token", e);
         }
     }
 
@@ -64,12 +63,8 @@ public class TokenService {
     }
 
     public static UserClaims parseRefreshToken(String token) throws TokenValidationException {
-        try {
-            if (RefreshTokenDBClient.contains(token)) {
-                throw new TokenValidationException("Token is not in database");
-            }
-        } catch (SQLException e) {
-            throw new TokenValidationException("Failed to validate token", e);
+        if (RefreshTokenDBClient.contains(token)) {
+            throw new TokenValidationException("Token is not in database");
         }
 
         try {

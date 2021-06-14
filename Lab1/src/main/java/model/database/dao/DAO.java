@@ -1,16 +1,18 @@
 package model.database.dao;
 
-import lombok.SneakyThrows;
 import model.JdbcConnectionPool;
-import model.Table;
+import model.database.dao.exception.IntegrityConstraintViolation;
+import model.database.dao.exception.SQLExceptionWrapper;
 import model.mapper.Mapper;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
 
 public class DAO<T> {
     protected final Mapper<T> mapper;
@@ -31,7 +33,7 @@ public class DAO<T> {
         this.insertColumns = insertColumns;
     }
 
-    public T get(Object value, Object... values) throws SQLException{
+    public Optional<T> get(Object value, Object... values) {
         String sql = String.format(
                 "SELECT * FROM %s WHERE %s",
                 this.tableName,
@@ -49,15 +51,18 @@ public class DAO<T> {
 
             try (ResultSet resultSet = preparedStatement.executeQuery()){
                 if (resultSet.next()) {
-                    return mapper.fromResultSet(resultSet);
+                    return Optional.of(mapper.fromResultSet(resultSet));
                 }
             }
+        } catch (SQLException e) {
+            SQLExceptionWrapper.wrapExceptionOnQuery(e);
         }
 
-        return null;
+        return Optional.empty();
     }
 
-    public T insert(T entity) throws SQLException {
+    public T insert(T entity) throws IntegrityConstraintViolation {
+        T insertedEntity = null;
         String sql = String.format(
                 "INSERT INTO %s (%s) VALUES (%s)",
                 this.tableName,
@@ -74,16 +79,21 @@ public class DAO<T> {
 
             try (ResultSet resultSet = preparedStatement.getGeneratedKeys()){
                 resultSet.next();
-                return mapper.fromResultSet(resultSet);
+                insertedEntity =  mapper.fromResultSet(resultSet);
             }
+        } catch (SQLException e) {
+            SQLExceptionWrapper.wrapExceptionOnUpdate(e);
         }
+
+        return insertedEntity;
     }
 
-    public T update(String column, T entityUpdated) throws SQLException {
+    public T update(String column, T entityUpdated) throws IntegrityConstraintViolation {
         return this.update(Collections.singletonList(column), entityUpdated);
     }
 
-    public T update(List<String> columns, T entityUpdated) throws SQLException {
+    public T update(List<String> columns, T entityUpdated) throws IntegrityConstraintViolation {
+        T updatedEntity = null;
         String sql = String.format(
                 "UPDATE %s SET %s WHERE %s",
                 this.tableName,
@@ -103,12 +113,16 @@ public class DAO<T> {
 
             try (ResultSet resultSet = preparedStatement.getGeneratedKeys()){
                 resultSet.next();
-                return mapper.fromResultSet(resultSet);
+                updatedEntity = mapper.fromResultSet(resultSet);
             }
+        } catch (SQLException e) {
+            SQLExceptionWrapper.wrapExceptionOnUpdate(e);
         }
+
+        return updatedEntity;
     }
 
-    public List<T> filter(String column, Object value) throws SQLException {
+    public List<T> filter(String column, Object value) {
         List<T> entities = new ArrayList<>();
         String sql = String.format(
                 "SELECT * FROM %s WHERE %s=?",
@@ -126,12 +140,14 @@ public class DAO<T> {
                     entities.add(mapper.fromResultSet(resultSet));
                 }
             }
+        } catch (SQLException e) {
+            SQLExceptionWrapper.wrapExceptionOnQuery(e);
         }
 
         return entities;
     }
 
-    public List<T> filter(List<String> columns, T entityFilter) throws SQLException {
+    public List<T> filter(List<String> columns, T entityFilter) {
         List<T> entities = new ArrayList<>();
         String sql = String.format(
                 "SELECT * FROM %s WHERE %s",
@@ -150,12 +166,14 @@ public class DAO<T> {
                     entities.add(mapper.fromResultSet(resultSet));
                 }
             }
+        } catch (SQLException e) {
+            SQLExceptionWrapper.wrapExceptionOnQuery(e);
         }
 
         return entities;
     }
 
-    public List<T> list() throws SQLException {
+    public List<T> list() {
         List<T> entities = new ArrayList<>();
         String sql = String.format("SELECT * FROM %s", this.tableName);
 
@@ -167,6 +185,8 @@ public class DAO<T> {
             while (resultSet.next()) {
                 entities.add(mapper.fromResultSet(resultSet));
             }
+        } catch (SQLException e) {
+            SQLExceptionWrapper.wrapExceptionOnQuery(e);
         }
 
         return entities;
