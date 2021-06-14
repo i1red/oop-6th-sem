@@ -1,4 +1,4 @@
-package model.mapper;
+package model.database.dao.mapper;
 
 import java.util.List;
 

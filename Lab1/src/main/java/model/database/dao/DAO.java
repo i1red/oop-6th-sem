@@ -3,7 +3,7 @@ package model.database.dao;
 import model.JdbcConnectionPool;
 import model.database.dao.exception.IntegrityConstraintViolation;
 import model.database.dao.exception.SQLExceptionWrapper;
-import model.mapper.Mapper;
+import model.database.dao.mapper.Mapper;
 
 import java.sql.*;
 import java.util.ArrayList;

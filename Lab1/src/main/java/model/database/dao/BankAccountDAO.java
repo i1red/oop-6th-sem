@@ -1,7 +1,7 @@
 package model.database.dao;
 
 import model.entity.BankAccount;
-import model.mapper.BankAccountMapper;
+import model.database.dao.mapper.BankAccountMapper;
 import model.Table;
 
 public class BankAccountDAO extends DAO<BankAccount>{
