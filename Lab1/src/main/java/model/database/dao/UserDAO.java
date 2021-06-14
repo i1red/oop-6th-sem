@@ -1,7 +1,7 @@
-package model.dao;
+package model.database.dao;
 
 import model.entity.User;
-import model.mapper.UserMapper;
+import model.database.dao.mapper.UserMapper;
 import model.Table;
 
 

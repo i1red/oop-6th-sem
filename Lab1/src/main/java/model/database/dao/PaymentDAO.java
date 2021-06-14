@@ -1,7 +1,7 @@
-package model.dao;
+package model.database.dao;
 
 import model.entity.Payment;
-import model.mapper.PaymentMapper;
+import model.database.dao.mapper.PaymentMapper;
 import model.Table;
 
 public class PaymentDAO extends DAO<Payment> {

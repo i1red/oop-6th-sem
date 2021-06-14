@@ -1,18 +1,19 @@
+import io.jsonwebtoken.Claims;
 import model.Table;
-import model.dao.DAO;
-import model.dao.UserDAO;
+import model.database.dao.BankAccountDAO;
+import model.database.dao.UserDAO;
+import model.entity.BankAccount;
 import model.entity.User;
+import model.service.UserService;
+import model.service.util.TokenService;
+import model.service.util.UserClaims;
 
-import java.sql.SQLException;
-import java.util.Arrays;
+import java.util.Map;
 
 public class App {
-    public static void main(String[] args) throws InterruptedException, SQLException {
-        DAO<User> userDAO = new UserDAO();
-
-        System.out.println(userDAO.filter(
-                Arrays.asList(Table.User.Column.IS_ADMIN, Table.User.Column.PASSWORD),
-                new User().setAdmin(false).setPassword("abc")
-        ));
+    public static void main(String[] args) throws Exception {
+        try {
+            new UserDAO().insert(new User().setUsername("i1red").setPassword("kek"));
+        } catch (Exception e) {}
     }
 }
