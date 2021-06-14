@@ -4,6 +4,8 @@ import model.JdbcConnectionPool;
 import model.database.dao.exception.IntegrityConstraintViolation;
 import model.database.dao.exception.SQLExceptionWrapper;
 import model.database.dao.mapper.Mapper;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -15,6 +17,7 @@ import java.util.stream.Stream;
 
 
 public class DAO<T> {
+    protected Logger logger;
     protected final Mapper<T> mapper;
     protected final String tableName;
     protected final List<String> columns;
@@ -23,6 +26,7 @@ public class DAO<T> {
 
     public DAO(Mapper<T> mapper, String tableName, List<String> columns) {
         this(mapper, tableName, columns, columns.subList(0, 1), columns.subList(1, columns.size()));
+        logger = LogManager.getLogger(this.getClass());
     }
 
     public DAO(Mapper<T> mapper, String tableName, List<String> columns, List<String> primaryKeyColumns, List<String> insertColumns) {
@@ -49,12 +53,15 @@ public class DAO<T> {
                 preparedStatement.setObject(i + 2, values[i]);
             }
 
+            logger.info(preparedStatement);
+
             try (ResultSet resultSet = preparedStatement.executeQuery()){
                 if (resultSet.next()) {
                     return Optional.of(mapper.fromResultSet(resultSet));
                 }
             }
         } catch (SQLException e) {
+            logger.error(e.getMessage());
             SQLExceptionWrapper.wrapExceptionOnQuery(e);
         }
 
@@ -75,6 +82,9 @@ public class DAO<T> {
                 PreparedStatement preparedStatement = connection.prepareStatement(sql, this.columns.toArray(String[]::new))
         ){
             this.mapper.fillPreparedStatement(entity, preparedStatement, this.insertColumns);
+
+            logger.info(preparedStatement);
+
             preparedStatement.executeUpdate();
 
             try (ResultSet resultSet = preparedStatement.getGeneratedKeys()){
@@ -82,6 +92,7 @@ public class DAO<T> {
                 insertedEntity =  mapper.fromResultSet(resultSet);
             }
         } catch (SQLException e) {
+            logger.error(e.getMessage());
             SQLExceptionWrapper.wrapExceptionOnUpdate(e);
         }
 
@@ -107,15 +118,17 @@ public class DAO<T> {
         ){
             this.mapper.fillPreparedStatement(entityUpdated, preparedStatement,
                     Stream.concat(columns.stream(), this.primaryKeyColumns.stream()).collect(Collectors.toList()));
-            preparedStatement.executeUpdate();
 
-            System.out.println(preparedStatement);
+            logger.info(preparedStatement);
+
+            preparedStatement.executeUpdate();
 
             try (ResultSet resultSet = preparedStatement.getGeneratedKeys()){
                 resultSet.next();
                 updatedEntity = mapper.fromResultSet(resultSet);
             }
         } catch (SQLException e) {
+            logger.error(e.getMessage());
             SQLExceptionWrapper.wrapExceptionOnUpdate(e);
         }
 
@@ -135,12 +148,15 @@ public class DAO<T> {
         ){
             preparedStatement.setObject(1, value);
 
+            logger.info(preparedStatement);
+
             try (ResultSet resultSet = preparedStatement.executeQuery()){
                 while (resultSet.next()) {
                     entities.add(mapper.fromResultSet(resultSet));
                 }
             }
         } catch (SQLException e) {
+            logger.error(e.getMessage());
             SQLExceptionWrapper.wrapExceptionOnQuery(e);
         }
 
@@ -161,12 +177,15 @@ public class DAO<T> {
         ){
             mapper.fillPreparedStatement(entityFilter, preparedStatement, columns);
 
+            logger.info(preparedStatement);
+
             try (ResultSet resultSet = preparedStatement.executeQuery()){
                 while (resultSet.next()) {
                     entities.add(mapper.fromResultSet(resultSet));
                 }
             }
         } catch (SQLException e) {
+            logger.error(e.getMessage());
             SQLExceptionWrapper.wrapExceptionOnQuery(e);
         }
 
@@ -182,10 +201,13 @@ public class DAO<T> {
                 Statement statement = connection.createStatement();
                 ResultSet resultSet = statement.executeQuery(sql)
         ){
+            logger.info(sql);
+
             while (resultSet.next()) {
                 entities.add(mapper.fromResultSet(resultSet));
             }
         } catch (SQLException e) {
+            logger.error(e.getMessage());
             SQLExceptionWrapper.wrapExceptionOnQuery(e);
         }
 
