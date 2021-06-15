@@ -2,7 +2,7 @@ import model.database.JdbcConnectionPool;
 import model.database.Table;
 import model.database.dao.BankAccountDAO;
 import model.database.dao.UserDAO;
-import model.database.dao.exception.IntegrityConstraintViolation;
+import model.database.exception.IntegrityConstraintViolation;
 import model.entity.BankAccount;
 import model.entity.User;
 

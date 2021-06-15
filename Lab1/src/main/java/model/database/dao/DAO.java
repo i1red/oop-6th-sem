@@ -1,8 +1,8 @@
 package model.database.dao;
 
-import model.database.JdbcConnectionPool;
-import model.database.dao.exception.IntegrityConstraintViolation;
-import model.database.dao.exception.SQLExceptionWrapper;
+import model.database.exception.IntegrityConstraintViolation;
+import model.database.exception.SQLError;
+import model.database.exception.SQLExceptionWrapper;
 import model.database.dao.mapper.Mapper;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -23,18 +23,22 @@ public class DAO<T> {
     protected final List<String> columns;
     protected final List<String> primaryKeyColumns;
     protected final List<String> insertColumns;
+    protected final Connection connection;
 
-    public DAO(Mapper<T> mapper, String tableName, List<String> columns) {
-        this(mapper, tableName, columns, columns.subList(0, 1), columns.subList(1, columns.size()));
-        logger = LogManager.getLogger(this.getClass());
+    public DAO(Mapper<T> mapper, String tableName, List<String> columns, Connection connection) {
+        this(mapper, tableName, columns, columns.subList(0, 1), columns.subList(1, columns.size()), connection);
     }
 
-    public DAO(Mapper<T> mapper, String tableName, List<String> columns, List<String> primaryKeyColumns, List<String> insertColumns) {
+    public DAO(Mapper<T> mapper, String tableName, List<String> columns, List<String> primaryKeyColumns, List<String> insertColumns, Connection connection) {
         this.tableName = tableName;
         this.mapper = mapper;
         this.columns = columns;
         this.primaryKeyColumns = primaryKeyColumns;
         this.insertColumns = insertColumns;
+
+        this.connection = connection;
+
+        this.logger = LogManager.getLogger(this.getClass());
     }
 
     public Optional<T> get(Object value, Object... values) {
@@ -45,7 +49,6 @@ public class DAO<T> {
         );
 
         try (
-                Connection connection = JdbcConnectionPool.getInstance().getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(sql)
         ){
             preparedStatement.setObject(1, value);
@@ -78,10 +81,9 @@ public class DAO<T> {
         );
 
         try (
-                Connection connection = JdbcConnectionPool.getInstance().getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(sql, this.columns.toArray(String[]::new))
         ){
-            this.mapper.fillPreparedStatement(entity, preparedStatement, this.insertColumns);
+            mapper.fillPreparedStatement(entity, preparedStatement, this.insertColumns);
 
             logger.info(preparedStatement);
 
@@ -121,10 +123,9 @@ public class DAO<T> {
         );
 
         try (
-                Connection connection = JdbcConnectionPool.getInstance().getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(sql, this.columns.toArray(String[]::new))
         ){
-            this.mapper.fillPreparedStatement(entityUpdated, preparedStatement,
+            mapper.fillPreparedStatement(entityUpdated, preparedStatement,
                     Stream.concat(columns.stream(), filterColumns.stream()).collect(Collectors.toList()));
 
             logger.info(preparedStatement);
@@ -153,7 +154,6 @@ public class DAO<T> {
         );
 
         try (
-                Connection connection = JdbcConnectionPool.getInstance().getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(sql)
         ){
             preparedStatement.setObject(1, value);
@@ -182,7 +182,6 @@ public class DAO<T> {
         );
 
         try (
-                Connection connection = JdbcConnectionPool.getInstance().getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(sql)
         ){
             mapper.fillPreparedStatement(entityFilter, preparedStatement, columns);
@@ -207,7 +206,6 @@ public class DAO<T> {
         String sql = String.format("SELECT * FROM %s", this.tableName);
 
         try (
-                Connection connection = JdbcConnectionPool.getInstance().getConnection();
                 Statement statement = connection.createStatement();
                 ResultSet resultSet = statement.executeQuery(sql)
         ){

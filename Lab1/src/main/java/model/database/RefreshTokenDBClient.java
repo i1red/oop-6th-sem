@@ -1,7 +1,7 @@
 package model.database;
 
-import model.database.dao.exception.IntegrityConstraintViolation;
-import model.database.dao.exception.SQLExceptionWrapper;
+import model.database.exception.IntegrityConstraintViolation;
+import model.database.exception.SQLExceptionWrapper;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

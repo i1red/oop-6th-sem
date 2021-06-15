@@ -5,7 +5,7 @@ import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import model.database.RefreshTokenDBClient;
-import model.database.dao.exception.IntegrityConstraintViolation;
+import model.database.exception.IntegrityConstraintViolation;
 import model.entity.User;
 import model.service.util.exception.TokenCreationError;
 import model.service.util.exception.TokenValidationException;
