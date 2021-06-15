@@ -1,7 +1,5 @@
 package model.database;
 
-import model.JdbcConnectionPool;
-import model.Table;
 import model.database.dao.exception.IntegrityConstraintViolation;
 import model.database.dao.exception.SQLExceptionWrapper;
 

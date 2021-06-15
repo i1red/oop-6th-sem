@@ -1,5 +1,5 @@
-import model.JdbcConnectionPool;
-import model.Table;
+import model.database.JdbcConnectionPool;
+import model.database.Table;
 import model.database.dao.BankAccountDAO;
 import model.database.dao.UserDAO;
 import model.database.dao.exception.IntegrityConstraintViolation;

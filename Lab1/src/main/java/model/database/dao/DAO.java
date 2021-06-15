@@ -1,6 +1,6 @@
 package model.database.dao;
 
-import model.JdbcConnectionPool;
+import model.database.JdbcConnectionPool;
 import model.database.dao.exception.IntegrityConstraintViolation;
 import model.database.dao.exception.SQLExceptionWrapper;
 import model.database.dao.mapper.Mapper;
@@ -99,17 +99,25 @@ public class DAO<T> {
         return insertedEntity;
     }
 
-    public T update(String column, T entityUpdated) throws IntegrityConstraintViolation {
-        return this.update(Collections.singletonList(column), entityUpdated);
+    public T update(String column, T entityUpdated) throws IntegrityConstraintViolation, IllegalArgumentException {
+        return this.update(Collections.singletonList(column), entityUpdated, null);
     }
 
-    public T update(List<String> columns, T entityUpdated) throws IntegrityConstraintViolation {
+    public T update(String column, T entityUpdated, List<String> filterColumns) throws IntegrityConstraintViolation, IllegalArgumentException {
+        return this.update(Collections.singletonList(column), entityUpdated, filterColumns);
+    }
+
+    public T update(List<String> columns, T entityUpdated, List<String> filterColumns) throws IntegrityConstraintViolation, IllegalArgumentException {
+        if (filterColumns == null) {
+            filterColumns = this.primaryKeyColumns;
+        }
+
         T updatedEntity = null;
         String sql = String.format(
                 "UPDATE %s SET %s WHERE %s",
                 this.tableName,
                 columns.stream().map(column -> String.format("%s=?", column)).collect(Collectors.joining(", ")),
-                String.join(" AND ", this.primaryKeyColumns.stream().map(column -> String.format("%s=?", column)).toArray(String[]::new))
+                String.join(" AND ", filterColumns.stream().map(column -> String.format("%s=?", column)).toArray(String[]::new))
         );
 
         try (
@@ -117,7 +125,7 @@ public class DAO<T> {
                 PreparedStatement preparedStatement = connection.prepareStatement(sql, this.columns.toArray(String[]::new))
         ){
             this.mapper.fillPreparedStatement(entityUpdated, preparedStatement,
-                    Stream.concat(columns.stream(), this.primaryKeyColumns.stream()).collect(Collectors.toList()));
+                    Stream.concat(columns.stream(), filterColumns.stream()).collect(Collectors.toList()));
 
             logger.info(preparedStatement);
 
@@ -126,6 +134,8 @@ public class DAO<T> {
             try (ResultSet resultSet = preparedStatement.getGeneratedKeys()){
                 resultSet.next();
                 updatedEntity = mapper.fromResultSet(resultSet);
+            } catch (SQLException e) {
+                throw new IllegalArgumentException("No entity to update. Check filter columns", e);
             }
         } catch (SQLException e) {
             logger.error(e.getMessage());

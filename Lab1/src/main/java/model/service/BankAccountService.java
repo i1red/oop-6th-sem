@@ -1,11 +1,12 @@
 package model.service;
 
-import model.Table;
+import model.database.Table;
 import model.database.dao.BankAccountDAO;
 import model.database.dao.DAO;
 import model.database.dao.exception.IntegrityConstraintViolation;
 import model.entity.BankAccount;
 
+import java.util.Arrays;
 import java.util.List;
 
 public class BankAccountService {
@@ -19,11 +20,24 @@ public class BankAccountService {
         }
     }
 
-    public BankAccount bankAccountSetBlocked(int id, boolean blocked) {
+    public BankAccount bankAccountSetBlocked(int accountId, boolean blocked) {
+        return bankAccountSetBlocked(accountId, blocked, null);
+    }
+
+    public BankAccount bankAccountSetBlocked(int accountId, boolean blocked, Integer accountUserId) throws IllegalArgumentException{
+        BankAccount bankAccount = new BankAccount().setId(accountId).setBlocked(blocked);
+
         try {
-            return bankAccountDAO.update(Table.BankAccount.Column.IS_BLOCKED, new BankAccount().setId(id).setBlocked(blocked));
+            if (accountUserId != null) {
+                return bankAccountDAO.update(
+                        Table.BankAccount.Column.IS_BLOCKED,
+                        bankAccount.setCustomerId(accountUserId),
+                        Arrays.asList(Table.BankAccount.Column.ID, Table.BankAccount.Column.USER_ID)
+                );
+            }
+            return bankAccountDAO.update(Table.BankAccount.Column.IS_BLOCKED, bankAccount);
         } catch (IntegrityConstraintViolation e) {
-            throw new IllegalArgumentException("Failed to update bank account", e);
+            throw new ServerError("Failed to update bank account");
         }
     }
 

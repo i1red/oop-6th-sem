@@ -1,4 +1,4 @@
-package model;
+package model.database;
 
 import org.postgresql.ds.PGSimpleDataSource;
 

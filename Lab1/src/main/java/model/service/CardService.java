@@ -1,6 +1,6 @@
 package model.service;
 
-import model.Table;
+import model.database.Table;
 import model.database.dao.BankAccountDAO;
 import model.database.dao.CardDAO;
 import model.database.dao.DAO;
@@ -8,15 +8,22 @@ import model.database.dao.exception.IntegrityConstraintViolation;
 import model.entity.BankAccount;
 import model.entity.Card;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class CardService {
     private final DAO<Card> cardDAO = new CardDAO();
     private final DAO<BankAccount> bankAccountDAO = new BankAccountDAO();
 
-    public Card createCard(Card card) throws IllegalArgumentException {
+    public Card createCard(Card card, Integer cardUserId) throws IllegalArgumentException {
+        if (cardUserId != null) {
+            Optional<BankAccount> bankAccount = bankAccountDAO.get(card.getAccountId());
+            if (bankAccount.isPresent() && bankAccount.get().getCustomerId() != cardUserId) {
+                throw new IllegalArgumentException("User does not hold this account");
+            }
+        }
+
         try {
             return cardDAO.insert(card);
         } catch (IntegrityConstraintViolation e) {

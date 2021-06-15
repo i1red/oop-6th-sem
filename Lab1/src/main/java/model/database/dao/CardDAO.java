@@ -2,7 +2,7 @@ package model.database.dao;
 
 import model.entity.Card;
 import model.database.dao.mapper.CardMapper;
-import model.Table;
+import model.database.Table;
 
 public class CardDAO extends DAO<Card> {
     public CardDAO() {

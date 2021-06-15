@@ -1,7 +1,7 @@
 package model.database.dao.mapper;
 
 import model.entity.BankAccount;
-import model.Table;
+import model.database.Table;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;

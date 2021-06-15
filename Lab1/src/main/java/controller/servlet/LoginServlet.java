@@ -1,7 +1,7 @@
 package controller.servlet;
 
 import com.google.gson.Gson;
-import controller.HttpUtils;
+import controller.HttpUtil;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
@@ -9,38 +9,23 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.SneakyThrows;
 import model.entity.User;
 import model.service.UserService;
-import model.service.util.TokenService;
+import model.service.util.TokenUtil;
 
+import java.io.IOException;
 import java.util.Map;
 
 @WebServlet("/login")
 public class LoginServlet extends HttpServlet {
     private final UserService userService = new UserService();
 
-    @SneakyThrows
     @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) {
-        User user = new Gson().fromJson(req.getReader(), User.class);
-
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         try {
-            User gotUser = userService.login(user);
+            User gotUser = userService.login(new Gson().fromJson(req.getReader(), User.class));
 
-            String accessToken = TokenService.createAccessToken(gotUser);
-            String refreshToken = TokenService.createRefreshToken(gotUser);
-
-            HttpUtils.writeJsonResponse(
-                    resp,
-                    HttpUtils.Status.OK,
-                    Map.of("accessToken", accessToken,"refreshToken", refreshToken)
-            );
+            HttpUtil.writeJsonResponse(resp, HttpUtil.Status.OK, TokenUtil.createTokens(gotUser));
         } catch (IllegalArgumentException e) {
-            HttpUtils.writeJsonResponse(
-                    resp,
-                    HttpUtils.Status.UNAUTHORIZED,
-                    Map.of("error", e.getMessage())
-            );
+            HttpUtil.writeJsonResponseError(resp, HttpUtil.Status.UNAUTHORIZED, e.getMessage());
         }
-
-
     }
 }
