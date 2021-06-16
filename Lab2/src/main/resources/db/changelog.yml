@@ -1,0 +1,226 @@
+databaseChangeLog:
+- changeSet:
+    id: 1623825357117-1
+    author: ivan (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            autoIncrement: true
+            constraints:
+              nullable: false
+              primaryKey: true
+              primaryKeyName: customer_pkey
+            name: id
+            type: INTEGER
+        - column:
+            constraints:
+              nullable: false
+            name: username
+            type: VARCHAR
+        - column:
+            constraints:
+              nullable: false
+            name: password
+            type: VARCHAR
+        - column:
+            constraints:
+              nullable: false
+            name: is_admin
+            type: BOOLEAN
+        tableName: user
+- changeSet:
+    id: 1623825357117-2
+    author: ivan (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            autoIncrement: true
+            constraints:
+              nullable: false
+              primaryKey: true
+              primaryKeyName: bank_account_pkey
+            name: id
+            type: INTEGER
+        - column:
+            constraints:
+              nullable: false
+            name: number
+            type: VARCHAR(34)
+        - column:
+            constraints:
+              nullable: false
+            name: user_id
+            type: INTEGER
+        - column:
+            constraints:
+              nullable: false
+            name: is_blocked
+            type: BOOLEAN
+        tableName: bank_account
+- changeSet:
+    id: 1623825357117-3
+    author: ivan (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            autoIncrement: true
+            constraints:
+              nullable: false
+              primaryKey: true
+              primaryKeyName: card_pkey
+            name: id
+            type: INTEGER
+        - column:
+            constraints:
+              nullable: false
+            name: number
+            type: VARCHAR(16)
+        - column:
+            constraints:
+              nullable: false
+            name: balance
+            type: FLOAT8
+        - column:
+            constraints:
+              nullable: false
+            name: account_id
+            type: INTEGER
+        tableName: card
+- changeSet:
+    id: 1623825357117-4
+    author: ivan (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            autoIncrement: true
+            constraints:
+              nullable: false
+              primaryKey: true
+              primaryKeyName: payment_pkey
+            name: id
+            type: INTEGER
+        - column:
+            constraints:
+              nullable: false
+            name: from_card_id
+            type: INTEGER
+        - column:
+            constraints:
+              nullable: false
+            name: to_card_id
+            type: INTEGER
+        - column:
+            constraints:
+              nullable: false
+            name: sum
+            type: FLOAT8
+        tableName: payment
+- changeSet:
+    id: 1623825357117-5
+    author: ivan (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            constraints:
+              nullable: false
+            name: value
+            type: VARCHAR
+        tableName: refresh_token
+- changeSet:
+    id: 1623825357117-6
+    author: ivan (generated)
+    changes:
+    - addUniqueConstraint:
+        columnNames: username
+        constraintName: customer_username_key
+        tableName: user
+- changeSet:
+    id: 1623825357117-7
+    author: ivan (generated)
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: user_id
+        baseTableName: bank_account
+        constraintName: bank_account_customer_id_fkey
+        deferrable: false
+        initiallyDeferred: false
+        onDelete: CASCADE
+        onUpdate: CASCADE
+        referencedColumnNames: id
+        referencedTableName: user
+        validate: true
+- changeSet:
+    id: 1623825357117-8
+    author: ivan (generated)
+    changes:
+    - addUniqueConstraint:
+        columnNames: number
+        constraintName: bank_account_number_key
+        tableName: bank_account
+- changeSet:
+    id: 1623825357117-9
+    author: ivan (generated)
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: account_id
+        baseTableName: card
+        constraintName: card_account_id_fkey
+        deferrable: false
+        initiallyDeferred: false
+        onDelete: CASCADE
+        onUpdate: CASCADE
+        referencedColumnNames: id
+        referencedTableName: bank_account
+        validate: true
+- changeSet:
+    id: 1623825357117-10
+    author: ivan (generated)
+    changes:
+    - addUniqueConstraint:
+        columnNames: number
+        constraintName: card_number_key
+        tableName: card
+- changeSet:
+    id: 1623825357117-11
+    author: ivan (generated)
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: from_card_id
+        baseTableName: payment
+        constraintName: payment_from_card_id_fkey
+        deferrable: false
+        initiallyDeferred: false
+        onDelete: CASCADE
+        onUpdate: CASCADE
+        referencedColumnNames: id
+        referencedTableName: card
+        validate: true
+- changeSet:
+    id: 1623825357117-12
+    author: ivan (generated)
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: to_card_id
+        baseTableName: payment
+        constraintName: payment_to_card_id_fkey
+        deferrable: false
+        initiallyDeferred: false
+        onDelete: CASCADE
+        onUpdate: CASCADE
+        referencedColumnNames: id
+        referencedTableName: card
+        validate: true
+- changeSet:
+    id: 1623825357117-13
+    author: ivan (generated)
+    changes:
+    - addUniqueConstraint:
+        columnNames: value
+        constraintName: refresh_token_value_key
+        tableName: refresh_token
+

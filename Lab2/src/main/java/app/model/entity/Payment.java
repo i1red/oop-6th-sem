@@ -3,6 +3,7 @@ package app.model.entity;
 import lombok.*;
 
 import javax.persistence.*;
+import java.io.Serializable;
 
 @Entity
 @EqualsAndHashCode
@@ -12,19 +13,17 @@ import javax.persistence.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "payment")
-public class Payment {
+public class Payment implements Serializable {
     @Id
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Integer id;
 
-    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JoinColumn(name = "from_card_id")
-    Card fromCard;
+    @Column(name = "from_card_id")
+    int fromCardId;
 
-    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JoinColumn(name = "to_card_id")
-    Card toCard;
+    @Column(name = "to_card_id")
+    int toCard;
 
     @Column(name = "sum")
     double sum;

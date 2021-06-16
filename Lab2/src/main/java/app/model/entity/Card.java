@@ -1,19 +1,20 @@
 package app.model.entity;
 
 import lombok.*;
+import lombok.experimental.Accessors;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.List;
 
 @Entity
-@EqualsAndHashCode
-@Getter
-@Setter
+@Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@Accessors(chain = true)
 @Table(name = "card")
-public class Card {
+public class Card implements Serializable {
     @Id
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,13 +26,6 @@ public class Card {
     @Column(name = "balance")
     double balance;
 
-    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JoinColumn(name = "account_id", nullable = false)
-    BankAccount bankAccount;
-
-    @OneToMany(mappedBy = "fromCard", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
-    List<Payment> paymentsFromCard;
-
-    @OneToMany(mappedBy = "toCard", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
-    List<Payment> paymentsToCard;
+    @Column(name = "account_id", nullable = false)
+    int accountId;
 }

@@ -1,19 +1,21 @@
 package app.model.entity;
 
 import lombok.*;
+import lombok.experimental.Accessors;
+import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.List;
 
 @Entity
-@EqualsAndHashCode
-@Getter
-@Setter
+@Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@Accessors(chain = true)
 @Table(name = "bank_account")
-public class BankAccount {
+public class BankAccount implements Serializable {
     @Id
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,13 +24,9 @@ public class BankAccount {
     @Column(name = "number", unique = true)
     String number;
 
-    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+    @Column(name = "user_id")
+    int userId;
 
     @Column(name = "is_blocked")
     boolean isBlocked = false;
-
-    @OneToMany(mappedBy = "bankAccount", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
-    List<Card> cards;
 }
