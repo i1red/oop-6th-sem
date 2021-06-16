@@ -17,7 +17,7 @@ import java.util.List;
 public class UserController {
     private UserService userService;
 
-    @GetMapping("/")
+    @GetMapping
     public UserReadDTO getByUsername(@RequestParam String username) {
         return userService.getByUsername(username);
     }

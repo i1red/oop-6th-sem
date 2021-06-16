@@ -34,52 +34,59 @@ public class TestDAO {
     }
 
     @Test
-    public void testInsertUser() throws IntegrityConstraintViolation {
+    public void testInsertUser() throws IntegrityConstraintViolation, SQLException{
         User user = new User().setUsername("test_user").setPassword("test_password").setAdmin(true);
 
-        User insertedUser = new UserDAO().insert(user);
+        try (Connection connection = JdbcConnectionPool.getInstance().getConnection()) {
+            User insertedUser = new UserDAO(connection).insert(user);
 
-        assertNotNull(insertedUser.getId());
-        assertEquals(user.getUsername(), insertedUser.getUsername());
-        assertEquals(user.getPassword(), insertedUser.getPassword());
-        assertEquals(user.isAdmin(), insertedUser.isAdmin());
+            assertNotNull(insertedUser.getId());
+            assertEquals(user.getUsername(), insertedUser.getUsername());
+            assertEquals(user.getPassword(), insertedUser.getPassword());
+            assertEquals(user.isAdmin(), insertedUser.isAdmin());
+        }
     }
 
     @Test
-    public void testGetUser() throws IntegrityConstraintViolation {
-        var userDAO = new UserDAO();
-        User user = userDAO.insert(new User().setUsername("test_user").setPassword("test_password"));
-        User gotUser = userDAO.get(user.getId()).get();
+    public void testGetUser() throws IntegrityConstraintViolation, SQLException {
+        try (Connection connection = JdbcConnectionPool.getInstance().getConnection()){
+            var userDAO = new UserDAO(connection);
+            User user = userDAO.insert(new User().setUsername("test_user").setPassword("test_password"));
+            User gotUser = userDAO.get(user.getId()).get();
 
-        assertEquals(user, gotUser);
+            assertEquals(user, gotUser);
+        }
     }
 
     @Test(expected = IntegrityConstraintViolation.class)
-    public void testForeignKeyViolation() throws IntegrityConstraintViolation {
-        new BankAccountDAO().insert(new BankAccount().setNumber("number").setCustomerId(1));
+    public void testForeignKeyViolation() throws IntegrityConstraintViolation, SQLException {
+        try (Connection connection = JdbcConnectionPool.getInstance().getConnection()){
+            new BankAccountDAO(connection).insert(new BankAccount().setNumber("number").setCustomerId(1));
+        }
     }
 
     @Test
-    public void testFilterBankAccount() throws IntegrityConstraintViolation {
-        var userDAO = new UserDAO();
-        var bankAccountDAO = new BankAccountDAO();
-        User firstUser = userDAO.insert(new User().setUsername("user1").setPassword("password"));
-        User secondUser = userDAO.insert(new User().setUsername("user2").setPassword("password"));
+    public void testFilterBankAccount() throws IntegrityConstraintViolation, SQLException {
+        try (Connection connection = JdbcConnectionPool.getInstance().getConnection()){
+            var userDAO = new UserDAO(connection);
+            var bankAccountDAO = new BankAccountDAO(connection);
+            User firstUser = userDAO.insert(new User().setUsername("user1").setPassword("password"));
+            User secondUser = userDAO.insert(new User().setUsername("user2").setPassword("password"));
 
-        BankAccount firstBankAccount = bankAccountDAO.insert(new BankAccount().setCustomerId(firstUser.getId()).setNumber("number1"));
-        BankAccount secondBankAccount = bankAccountDAO.insert(new BankAccount().setCustomerId(secondUser.getId()).setNumber("number2"));
+            BankAccount firstBankAccount = bankAccountDAO.insert(new BankAccount().setCustomerId(firstUser.getId()).setNumber("number1"));
+            BankAccount secondBankAccount = bankAccountDAO.insert(new BankAccount().setCustomerId(secondUser.getId()).setNumber("number2"));
 
-        List<BankAccount> firstUserAccounts = bankAccountDAO.filter(Table.BankAccount.Column.USER_ID, firstUser.getId());
-        List<BankAccount> secondUserAccounts = bankAccountDAO.filter(
-                Arrays.asList(Table.BankAccount.Column.USER_ID, Table.BankAccount.Column.IS_BLOCKED),
-                secondBankAccount
-        );
+            List<BankAccount> firstUserAccounts = bankAccountDAO.filter(Table.BankAccount.Column.USER_ID, firstUser.getId());
+            List<BankAccount> secondUserAccounts = bankAccountDAO.filter(
+                    Arrays.asList(Table.BankAccount.Column.USER_ID, Table.BankAccount.Column.IS_BLOCKED),
+                    secondBankAccount
+            );
 
-        assertEquals(1, firstUserAccounts.size());
-        assertEquals(firstBankAccount, firstUserAccounts.get(0));
+            assertEquals(1, firstUserAccounts.size());
+            assertEquals(firstBankAccount, firstUserAccounts.get(0));
 
-        assertEquals(1, secondUserAccounts.size());
-        assertEquals(secondBankAccount, secondUserAccounts.get(0));
-
+            assertEquals(1, secondUserAccounts.size());
+            assertEquals(secondBankAccount, secondUserAccounts.get(0));
+        }
     }
 }
