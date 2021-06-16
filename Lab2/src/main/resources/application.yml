@@ -1,0 +1,28 @@
+spring:
+    application:
+        name: payment-system
+
+    datasource:
+        url: jdbc:postgresql://localhost:5432/payment_system_spring
+        username: postgres
+        password: postgres
+        driver-class-name: org.postgresql.Driver
+
+    jpa:
+        database: POSTGRESQL
+        show-sql: true
+        hibernate:
+            ddl-auto: validate
+
+    liquibase:
+        change-log: classpath:/db/changelog-master.yml
+        enabled: false
+
+keycloak:
+    realm: payment-system-spring
+    resource: payment-system-api
+    auth-server-url: http://localhost:8180/auth
+    bearer-only: true
+    principal-attribute: preferred_username
+    public-client: true
+
