@@ -1,7 +1,6 @@
 package model.database.dao;
 
 import model.database.exception.IntegrityConstraintViolation;
-import model.database.exception.SQLError;
 import model.database.exception.SQLExceptionWrapper;
 import model.database.dao.mapper.Mapper;
 import org.apache.log4j.LogManager;

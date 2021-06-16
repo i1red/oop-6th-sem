@@ -4,15 +4,11 @@ import com.google.gson.Gson;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.SneakyThrows;
-import model.entity.User;
 import model.service.util.TokenUtil;
 import model.service.util.UserClaims;
-import model.service.util.exception.TokenValidationException;
 
 import java.util.Collections;
 import java.util.Map;
-import java.util.Optional;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class HttpUtil {
