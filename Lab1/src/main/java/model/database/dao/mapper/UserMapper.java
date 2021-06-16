@@ -3,7 +3,7 @@ package model.database.dao.mapper;
 import java.util.List;
 
 import model.entity.User;
-import model.Table;
+import model.database.Table;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;

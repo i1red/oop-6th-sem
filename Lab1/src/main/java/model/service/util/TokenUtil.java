@@ -5,7 +5,7 @@ import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import model.database.RefreshTokenDBClient;
-import model.database.dao.exception.IntegrityConstraintViolation;
+import model.database.exception.IntegrityConstraintViolation;
 import model.entity.User;
 import model.service.util.exception.TokenCreationError;
 import model.service.util.exception.TokenValidationException;
@@ -15,7 +15,7 @@ import java.util.Date;
 import java.util.Map;
 
 
-public class TokenService {
+public class TokenUtil {
     private static final String ACCESS_TOKEN_SECRET_KEY = System.getenv("ACCESS_TOKEN_SECRET_KEY");
     private static final String REFRESH_TOKEN_SECRET_KEY = System.getenv("REFRESH_TOKEN_SECRET_KEY");
 
@@ -46,6 +46,10 @@ public class TokenService {
         } catch (IntegrityConstraintViolation e) {
             throw new TokenCreationError("Failed to save token", e);
         }
+    }
+
+    public static Map<String, String> createTokens(User user) {
+        return Map.of("accessToken", createAccessToken(user), "refreshToken", createRefreshToken(user));
     }
 
     public static UserClaims parseAccessToken(String token) throws TokenValidationException {

@@ -8,7 +8,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import model.Table;
+import model.database.Table;
 
 public class CardMapper implements Mapper<Card>{
 

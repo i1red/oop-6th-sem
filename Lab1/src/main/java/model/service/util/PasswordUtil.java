@@ -16,7 +16,7 @@ import java.util.Arrays;
 import java.util.Base64;
 
 
-public class PasswordService {
+public class PasswordUtil {
     private static final String SECRET_KEY = System.getenv("PASSWORD_SECRET_KEY");
     private static final String SALT = System.getenv("PASSWORD_SALT");
 
