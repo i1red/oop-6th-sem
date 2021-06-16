@@ -6,7 +6,6 @@ import model.database.dao.UserDAO;
 import model.database.exception.IntegrityConstraintViolation;
 import model.database.exception.SQLError;
 import model.entity.User;
-import model.database.dao.DAO;
 import model.service.util.PasswordUtil;
 
 import java.sql.Connection;

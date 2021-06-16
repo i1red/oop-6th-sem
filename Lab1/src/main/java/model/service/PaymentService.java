@@ -4,9 +4,7 @@ import model.database.JdbcConnectionPool;
 import model.database.Table;
 import model.database.dao.BankAccountDAO;
 import model.database.dao.CardDAO;
-import model.database.dao.DAO;
 import model.database.dao.PaymentDAO;
-import model.database.exception.IntegrityConstraintViolation;
 import model.database.exception.SQLError;
 import model.entity.BankAccount;
 import model.entity.Card;
@@ -45,17 +43,16 @@ public class PaymentService {
 
             connection.setAutoCommit(false);
 
-            Payment insertedPayment = null;
             try {
-                insertedPayment = paymentDAO.insert(payment);
                 cardDAO.update(Table.Card.Column.BALANCE, fromCard.setBalance(fromCard.getBalance() - payment.getSum()));
                 cardDAO.update(Table.Card.Column.BALANCE, toCard.setBalance(toCard.getBalance() + payment.getSum()));
+                Payment insertedPayment = paymentDAO.insert(payment);
+                connection.commit();
+                return insertedPayment;
             } catch (Throwable e) {
                 connection.rollback();
+                throw new Error(e.getMessage());
             }
-
-            connection.commit();
-            return insertedPayment;
         } catch (SQLException e) {
             throw new SQLError(e.getMessage());
         }

@@ -4,7 +4,6 @@ import model.database.JdbcConnectionPool;
 import model.database.Table;
 import model.database.dao.BankAccountDAO;
 import model.database.dao.CardDAO;
-import model.database.dao.DAO;
 import model.database.exception.IntegrityConstraintViolation;
 import model.database.exception.SQLError;
 import model.entity.BankAccount;

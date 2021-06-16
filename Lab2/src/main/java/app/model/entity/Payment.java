@@ -1,17 +1,17 @@
 package app.model.entity;
 
 import lombok.*;
+import lombok.experimental.Accessors;
 
 import javax.persistence.*;
 import java.io.Serializable;
 
 @Entity
-@EqualsAndHashCode
-@Getter
-@Setter
+@Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@Accessors(chain = true)
 @Table(name = "payment")
 public class Payment implements Serializable {
     @Id

@@ -1,6 +1,5 @@
 package model.database;
 
-import model.database.exception.SQLError;
 import org.postgresql.ds.PGSimpleDataSource;
 
 import javax.sql.DataSource;

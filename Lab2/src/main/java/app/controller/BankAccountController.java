@@ -18,7 +18,7 @@ import java.util.List;
 public class BankAccountController {
     private final BankAccountService bankAccountService;
 
-    @PostMapping("/")
+    @PostMapping
     @ResponseBody
     public BankAccountReadDTO create(@RequestBody BankAccountWriteDTO writeDTO) {
         return bankAccountService.create(writeDTO);
@@ -31,7 +31,7 @@ public class BankAccountController {
         return bankAccountService.setBlocked(id, blocked);
     }
 
-    @GetMapping("/")
+    @GetMapping
     @ResponseBody
     @RolesAllowed("admin")
     public List<BankAccountReadDTO> list() {

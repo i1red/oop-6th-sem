@@ -5,14 +5,12 @@ import jakarta.servlet.*;
 import jakarta.servlet.annotation.WebFilter;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import lombok.SneakyThrows;
 import model.service.util.TokenUtil;
-import model.service.util.UserClaims;
 import model.service.util.exception.TokenValidationException;
 
 import java.io.IOException;
 import java.util.Map;
-import java.util.Optional;
+
 
 @WebFilter(urlPatterns = {"/bank-accounts", "/cards", "/payments"})
 public class AuthFilter implements Filter {
